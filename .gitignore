@@ -1,6 +1,6 @@
-.ds_store
 .codex/
 .specify/
+artifacts/
 # 本地 Agent 说明，默认不提交
 AGENTS.md
 backups/
@@ -10,6 +10,7 @@ html/output/
 html/v1/
 # 本地基线/占位 HTML 可跟踪，输出文件保持忽略
 html/output/*.html
+specs/feat009-weekly-summary/
 *.sqlite
 *.jsonl
 *.env

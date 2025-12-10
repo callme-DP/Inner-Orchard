@@ -8,10 +8,11 @@
 - `feat002-calendar-parsing/`：日历解析修复（属性输出、备注/类别解析等）。
 - `feat003-data-pipeline/`：接入真实日历/ActivityWatch/Mood 替换 mock。
 - `feat004-validation/`：校验与提示（权限/缺数据/耗时对齐/备注）。
-- `feat005-visual-interaction/`：粒度切换、精力维度切换、周对比、缺数据占位。
-- `feat006-note-export/`：Bear 笔记全量/增量导出与 manifest 去重。
+- `feat005-visual-interaction/`：粒度切换、精力维度切换、周对比、缺数据占位；按 phase 拆分 bear/reminder/calendar 可视化（各有 plan/spec/task）。
+- `feat006-bear-export/`：Bear 笔记全量/增量导出与 manifest 去重。
 - `feat007-cognitive-leap/`（待建）：认知跃迁识别与可视化。
 - `feat008-task-management/`（待建）：任务/提醒多维视图。
+- `feat009-weekly-summary/`：周摘要生成（里程碑/情绪/作息异常/TODO）。
 - `time-energy-visualization/`：总体可视化规范与快速上手。
 
 ## 架构桥 / 双轨协作

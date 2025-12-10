@@ -1,4 +1,4 @@
-# FEAT-006-笔记导出与增量策略（Bear/Markdown）
+# FEAT-006-Bear 导出与增量策略（笔记/Markdown）
 
 ## 目标
 - 从本地 SQLite/Markdown 全量导出笔记到 gitignore 目录，后续支持按标签、时间范围、增量更新的懒加载导出。
