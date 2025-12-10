@@ -1,0 +1,29 @@
+{
+  "day": [
+    {"date": "2024-12-09", "start": "09:30", "end": "12:00", "title": "项目规划", "calendar": "工作", "category": "工作", "duration_minutes": 150, "notes": "需求评审"},
+    {"date": "2024-12-09", "start": "13:30", "end": "15:30", "title": "深度工作", "calendar": "工作", "category": "工作", "duration_minutes": 120, "notes": ""},
+    {"date": "2024-12-09", "start": "15:30", "end": "16:12", "title": "邮件/IM 处理", "calendar": "沟通/会议", "category": "沟通/会议", "duration_minutes": 42, "notes": ""},
+    {"date": "2024-12-09", "start": "16:30", "end": "17:30", "title": "阅读/学习", "calendar": "阅读/学习", "category": "阅读/学习", "duration_minutes": 60, "notes": "技术文档"}
+  ],
+  "week": [
+    {"date": "2024-12-09", "start": "09:30", "end": "12:00", "title": "项目规划", "calendar": "工作", "category": "工作", "duration_minutes": 150},
+    {"date": "2024-12-10", "start": "10:00", "end": "12:00", "title": "需求细化", "calendar": "工作", "category": "工作", "duration_minutes": 120},
+    {"date": "2024-12-11", "start": "14:00", "end": "15:30", "title": "产品评审", "calendar": "沟通/会议", "category": "沟通/会议", "duration_minutes": 90},
+    {"date": "2024-12-12", "start": "16:00", "end": "17:00", "title": "深度阅读", "calendar": "阅读/学习", "category": "阅读/学习", "duration_minutes": 60},
+    {"date": "2024-12-13", "start": "18:00", "end": "18:40", "title": "健身", "calendar": "健康/运动", "category": "健康/运动", "duration_minutes": 40},
+    {"date": "2024-12-14", "start": "11:00", "end": "12:00", "title": "突发任务处理", "calendar": "突发任务", "category": "突发任务", "duration_minutes": 60},
+    {"date": "2024-12-15", "start": "20:00", "end": "21:00", "title": "娱乐", "calendar": "娱乐", "category": "娱乐", "duration_minutes": 60}
+  ],
+  "month": [
+    {"week": "2024-W49", "total_minutes": 2280, "work_minutes": 1350, "meeting_minutes": 420, "learning_minutes": 210, "health_minutes": 200, "entertainment_minutes": 100},
+    {"week": "2024-W50", "total_minutes": 2400, "work_minutes": 1400, "meeting_minutes": 400, "learning_minutes": 240, "health_minutes": 200, "entertainment_minutes": 160},
+    {"week": "2024-W51", "total_minutes": 2520, "work_minutes": 1500, "meeting_minutes": 450, "learning_minutes": 240, "health_minutes": 200, "entertainment_minutes": 130},
+    {"week": "2024-W52", "total_minutes": 2580, "work_minutes": 1500, "meeting_minutes": 420, "learning_minutes": 260, "health_minutes": 220, "entertainment_minutes": 180}
+  ],
+  "year": [
+    {"month": "2024-09", "total_minutes": 9600, "work_minutes": 5800, "meeting_minutes": 1200, "learning_minutes": 800, "health_minutes": 600, "entertainment_minutes": 1200},
+    {"month": "2024-10", "total_minutes": 9800, "work_minutes": 6000, "meeting_minutes": 1100, "learning_minutes": 850, "health_minutes": 700, "entertainment_minutes": 1150},
+    {"month": "2024-11", "total_minutes": 10000, "work_minutes": 6100, "meeting_minutes": 1200, "learning_minutes": 900, "health_minutes": 700, "entertainment_minutes": 1100},
+    {"month": "2024-12", "total_minutes": 10200, "work_minutes": 6200, "meeting_minutes": 1300, "learning_minutes": 950, "health_minutes": 750, "entertainment_minutes": 1000}
+  ]
+}

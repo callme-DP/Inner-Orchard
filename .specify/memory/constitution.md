@@ -1,50 +1,144 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# [PROJECT_NAME] 宪章
+<!-- 示例：Spec 宪章、TaskFlow 宪章等 -->
 
-## Core Principles
+## 核心原则
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## 需求与规范编写标准
+- 用业务语境描述（例如“客户下单100件衣服，打印，应该收90块”）。
+- 用 Given-When-Then 描述场景。
+- 不描述实现细节（如“某字段 should be defined”“应该调用某方法”）。
+### 1. 中文文档
+所有文档、注释、Git提交必须使用中文
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### 1.1 提交信息规范
+- Git 提交信息格式：`feat(编号)：需求描述`（示例：`feat(F001)：集成 ActivityWatch 拉取脚本`）。
+- 需求描述必须用中文，简洁概括本次变更。
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### 2. YANGNI优先
+- 不做“可能用到”的功能
+- 不预留扩展点
+- 判断标准：出现“万一”、“将来”、“可能”直接不做
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### 3. 分层测试策略（契约优先、行动驱动）
+#### 俩层分级
+**第一层 -核心业务（必须測试，覆誉率>80%）**
+- 触发条件：涉及钱、库存、权限、复杂算法、对外API
+- 测试优先级：契约測试 ＞ 集成测试 ＞ 行为測试 ＞ 单元测试 
+- 风格要求：用业务语言（Given-When-Then），測业务行为，不测技术细节
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+**第二层 -其他代码（不测试）**
+- 触发条件：CRUD、脚本、简单逻辑
+- 测试要求：不需要測试
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+#### AI规则
+**自动判断**
+- 核心业务 👉 自动生成测试（契约/集成/行为）
+- 其他代码 👉 不生成测试
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+**质量标准**
+- ✅ 用业务语境描述（如“今天‘工作’日历下总耗时13.5h，与今日日程概览中类别为工作的记录合计不匹配”）。
+- ✅ 用 Given-When-Then 结构描述场景。
+- ❌ 不写实现细节（如“某字段 should be defined”“应该调用某方法”）。
+> 📄 详细指南：见 `memory/constitution-guide.md`（待补充）。
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### 4. 开发效率 = 运行效率
+能复用框架/库就复用，无框架时交付优先。
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+### 5. Spec 驱动开发
+遵循 Spec → Plan → Code，每个物料注明验证路径。
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+### 6. AI 协作（70/30）
+- AI 做 CRUD/模板/文档等重复工作；
+- 人类负责业务决策、架构、审查、部署
+- 注： AI仅为核心业务生成测试，其他代码不生成测试（见原则3）
+
+### 7. 多租户预留
+数据库必须包含tenant_id，框架层处理，业务代码透明。
+ 
+### 8. RFID核心
+所有流程围绕RFID设计，硬件抽象层统一接口
+
+### 9. 多语言支持
+系统必须支持国际化。默认语言英文，支持中文。使用Lingui框架管理多语言
+
+**国际化规范**：
+- **Message ID 必须是英文**：所有“msgid”必须使用英文作为唯一标识，不允许使用中文或其他语言 
+- **翻译在msgstr**：各语言的翻译内容放在内应的`msgstr` 中
+- **料源代码规范**：
+    - ✅ 正确：`<Trans>Save</Trans>` 或 `_('Save')`
+    - ❌ 错误：`<Trans>保存</Trans>` 或 `_('保存')`
+
+- **提取和编译**：
+   // - 修改源代码文本后必须运行 pnpm console： Lingui： extract
+   // - 提交前必须运行pnpm console：lingud：compile）
+
+- **翻译完整性**：所有新增的英文 msgid 必须同步添加中文翻译
+
+**理由**：英文作为 nsgid 是国际化最佳实践，确保：
+1. 唯一性：英文作为默认语言和标准标识符
+2. 可维护性：便于多语言团队协作
+3. 回退机制：缺失翻译时显示英文比显示中文更合理
+
+### 10. DRY原则（Don't Repeat Yourself）
+严禁任何形式的重复：代码、文档、配置、数据。所有内容只在一处定义，其他地方通过引用使用。重复是万恶之源，导致维护困难和不一致。
+
+### 11. 零注释原则
+禁止注释掉的代码和显而易见的注释。嗲吗应自解释。仅保留解释WHY的注释（业务原因、设计决策）。需要注释的代码应重写。
+
+### 12.最先工具优先
+默认使用官方最新稳定版，锁定旧版本需说明理由
+
+### 13.精确版本锁定
+所有package.json中的依赖版本必须使用精确版本号，禁止使用`^`、`～`等版本范围符号
+
+**推荐做法**  
+- 使用 `pnpm add <package>` —— 自动使用精确版本（`.npmrc` 配置 `save-exact=true`）  
+- 或者指定版本：`pnpm add <package>@<exact-version>`  
+- 示例如：`pnpm add react@18.2.0` 或 `pnpm add lodash`（自动锁定最新版本）
+
+**手动指定依赖版本**  
+- 使用 `pnpm add <package>@<exact-version>` 手动指定目标版本号  
+- 示例：`pnpm add react@18.3.0`  
+- 或使用 Renovate 自动管理依赖（推荐）
+
+**自动依赖更新**  
+- Renovate 每周固定凌晨 2:00 AEST/AEDT 自动检查依赖更新  
+- Patch 更新合并为一个 PR（如 1.0.0 → 1.0.1）  
+- Minor/Major 更新各自创建独立 PR（如 1.0.0 → 1.1.0 或 2.0.0）  
+- Major 更新自动添加 `breaking-change` 标签
+
+**理由** 确保所有环境使用完全一致的依赖版本，避免因版本范围导致的“在我机器上能跑”问题，提升构建可重现性和缓存命中率。
+
+### 14. 沙箱/无权限场景的日志策略
+- 在沙箱或无权限时，Python/脚本必须输出充分日志（命令、返回码、stderr、stdout 关键行、解析失败原因）到约定目录（如 `data/**/logs` 或同目录日志文件），直至验证通过。
+- 日志需明确提示权限/沙箱导致的不可执行，便于远程排查；调试阶段不得省略，验证通过后可酌情降级或清理多余日志。
+
+### 15. 变更范围约束
+- 未沟通确认，不得移除/隐藏既有功能、按钮或视图，不得跨越既定范围修改无关模块。
+- 发现数据/需求问题，先记录与澄清，再按 Spec/Plan 执行；不得以“修复”为由删掉功能。
+- 占位/缺数据应明确标注，避免误导为已实现。
+
+### 16.文档规范
+- 单一来源：功能规格只存放于 `specs/`（每个功能一目录，含 `spec.md`/`plan.md`/`tasks.md` 等）。
+- 知识库：运行手册、修复记录、质量与测试、阶段性报告统一放 `docs/`，并由 `docs/README.md` 索引。
+- 兼容策略：`.specify/` 仅用于代理内存与模板；如工具仍写入 `.specify/specs/`，合并前需迁移到 `specs/`。
+- 根目录禁令：禁止新增散落文档（如 `*_STATUS.md`、`MERGE_NOTES.md` 等），相关记录统一归档到 `specs/` 或 `docs/reports/`，禁止散落。
+- 快速入门：为新成员提供 `specs/<feature>/quickstart.md` 或类似指引文件。
+- 一致性：命名、结构、层级遵循 Spec→Plan→Code 流程；文档与实现保持同步更新。
+
+### 17. 稳定交付
+交付物必须可运行、可验证、可追踪；关键决策和日志需留痕，避免隐性知识。
+
+### 18. 工作流约定（重大功能/重构）
+- 开发前：先补充/更新对应 spec，写清 Why/What/Done-criteria；未确认的暂不编码。
+- 开发中：对照 spec 执行，若有偏离需记录原因与处理方式（降级/绕过）。
+- 交付时：在提交/PR 摘要中映射到 spec 条目，逐条确认验收项（含缺失说明）。
+
+## 治理
+<!-- 示例：宪章优先于其他实践；修订需文档、审批、迁移计划 -->
 
 [GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+<!-- 示例：所有 PR/评审需核对合规；复杂度需有理由；运行期开发指引见 [GUIDANCE_FILE] -->
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**版本**: [CONSTITUTION_VERSION] | **通过日期**: [RATIFICATION_DATE] | **最近修订**: [LAST_AMENDED_DATE]
+<!-- 示例：版本：2.1.1 | 通过日期：2025-06-13 | 最近修订：2025-07-16 -->

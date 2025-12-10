@@ -1,0 +1,20 @@
+{
+  "current_week": [
+    { "label": "Mon", "count": 2 },
+    { "label": "Tue", "count": 3 },
+    { "label": "Wed", "count": 1 },
+    { "label": "Thu", "count": 4 },
+    { "label": "Fri", "count": 2 },
+    { "label": "Sat", "count": 1 },
+    { "label": "Sun", "count": 2 }
+  ],
+  "previous_week": [
+    { "label": "Mon", "count": 1 },
+    { "label": "Tue", "count": 2 },
+    { "label": "Wed", "count": 2 },
+    { "label": "Thu", "count": 1 },
+    { "label": "Fri", "count": 3 },
+    { "label": "Sat", "count": 2 },
+    { "label": "Sun", "count": 2 }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "current_week": [
+    { "label": "Mon", "stamina": 7, "emotion": 6, "willpower": 7, "cognition": 6 },
+    { "label": "Tue", "stamina": 7.5, "emotion": 6.5, "willpower": 7.5, "cognition": 6.5 },
+    { "label": "Wed", "stamina": 6.5, "emotion": 6, "willpower": 6.5, "cognition": 6 },
+    { "label": "Thu", "stamina": 8, "emotion": 7, "willpower": 8, "cognition": 7 },
+    { "label": "Fri", "stamina": 8.5, "emotion": 7.5, "willpower": 8.5, "cognition": 7.5 },
+    { "label": "Sat", "stamina": 8, "emotion": 7, "willpower": 8, "cognition": 7 },
+    { "label": "Sun", "stamina": 7.5, "emotion": 6.5, "willpower": 7, "cognition": 6.5 }
+  ],
+  "previous_week": [
+    { "label": "Mon", "stamina": 6.5, "emotion": 6, "willpower": 6.5, "cognition": 6 },
+    { "label": "Tue", "stamina": 6.8, "emotion": 6.2, "willpower": 6.8, "cognition": 6.2 },
+    { "label": "Wed", "stamina": 6, "emotion": 5.8, "willpower": 6, "cognition": 5.8 },
+    { "label": "Thu", "stamina": 7, "emotion": 6.5, "willpower": 7, "cognition": 6.5 },
+    { "label": "Fri", "stamina": 7.2, "emotion": 6.6, "willpower": 7.2, "cognition": 6.6 },
+    { "label": "Sat", "stamina": 7, "emotion": 6.2, "willpower": 7, "cognition": 6.2 },
+    { "label": "Sun", "stamina": 6.8, "emotion": 6, "willpower": 6.8, "cognition": 6 }
+  ]
+}

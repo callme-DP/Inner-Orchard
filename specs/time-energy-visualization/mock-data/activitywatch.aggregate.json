@@ -1,0 +1,30 @@
+{
+  "day": [
+    { "name": "工作", "duration_minutes": 390, "baseline_minutes": 300, "change_pct": 30.0 },
+    { "name": "沟通/会议", "duration_minutes": 72, "baseline_minutes": 90, "change_pct": -20.0 },
+    { "name": "阅读/学习", "duration_minutes": 60, "baseline_minutes": 48, "change_pct": 25.0 },
+    { "name": "健康/运动", "duration_minutes": 42, "baseline_minutes": 36, "change_pct": 16.7 },
+    { "name": "娱乐", "duration_minutes": 54, "baseline_minutes": 60, "change_pct": -10.0 }
+  ],
+  "week": [
+    { "name": "工作", "duration_minutes": 2250, "baseline_minutes": 2100, "change_pct": 7.1 },
+    { "name": "沟通/会议", "duration_minutes": 540, "baseline_minutes": 600, "change_pct": -10.0 },
+    { "name": "阅读/学习", "duration_minutes": 420, "baseline_minutes": 360, "change_pct": 16.7 },
+    { "name": "健康/运动", "duration_minutes": 210, "baseline_minutes": 180, "change_pct": 16.7 },
+    { "name": "娱乐", "duration_minutes": 330, "baseline_minutes": 420, "change_pct": -21.4 }
+  ],
+  "month": [
+    { "name": "工作", "duration_minutes": 9600, "baseline_minutes": 9000, "change_pct": 6.7 },
+    { "name": "沟通/会议", "duration_minutes": 2100, "baseline_minutes": 2400, "change_pct": -12.5 },
+    { "name": "阅读/学习", "duration_minutes": 1800, "baseline_minutes": 1500, "change_pct": 20.0 },
+    { "name": "健康/运动", "duration_minutes": 900, "baseline_minutes": 840, "change_pct": 7.1 },
+    { "name": "娱乐", "duration_minutes": 1500, "baseline_minutes": 1800, "change_pct": -16.7 }
+  ],
+  "year": [
+    { "name": "工作", "duration_minutes": 112000, "baseline_minutes": 108000, "change_pct": 3.7 },
+    { "name": "沟通/会议", "duration_minutes": 26000, "baseline_minutes": 28800, "change_pct": -9.7 },
+    { "name": "阅读/学习", "duration_minutes": 23000, "baseline_minutes": 20000, "change_pct": 15.0 },
+    { "name": "健康/运动", "duration_minutes": 11000, "baseline_minutes": 10000, "change_pct": 10.0 },
+    { "name": "娱乐", "duration_minutes": 17000, "baseline_minutes": 21000, "change_pct": -19.0 }
+  ]
+}
