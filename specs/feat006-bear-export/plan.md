@@ -1,4 +1,4 @@
-# 计划（FEAT-006-笔记导出与增量策略）
+# 计划（FEAT-006-Bear 导出与增量策略）
 
 ## 范围与策略
 - 数据源：Bear SQLite + 附件；输出到 `data/notes_export/`（gitignore），含正文/附件/manifest。
@@ -14,7 +14,7 @@
 
 ## 交付物
 - `scripts/export_notes.py`（或同名）及复用函数，产出 Markdown/附件、manifest、日志。
-- 文档：`docs/bear-integration.md` 补充使用示例；`specs/feat006-note-export/quickstart.md`（可复用）。
+- 文档：`docs/bear-integration.md` 补充使用示例；`specs/feat006-bear-export/quickstart.md`（可复用）。
 - 示例命令：全量、按标签、按日期、增量模式。
 
 ## 风险与对策

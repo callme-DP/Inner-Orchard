@@ -7,6 +7,7 @@
 - 粒度：周/月/年；日视图仅在有数据时显示或占位说明。
 - 精力：维度切换（全部/单维），周对比逻辑。
 - 视图状态：缺上周数据时环比显示“-”；缺数据时按钮/视图有占位或禁用提示。
+- Phase 管理：细分 bear/reminder/calendar 三个子视图，分别在 `phase/<name>/` 下维护 plan/spec/task（bear-visual、reminder-visual、calendar-visual）。
 
 ## 验收
 - 切换粒度/精力维度时，数据与视图同步，无残留空白或错误数据。
