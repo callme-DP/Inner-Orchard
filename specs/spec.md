@@ -31,6 +31,8 @@
 - Analyze/Test：`/speckit.analyze` 或手动校验；缺数据/权限需提示
 - 架构桥：当发现架构问题时，用上述三句话报告 + 建 RFC/Backlog，并在 Architecture Notes 记录。
 - 文档约定：每个 `specs/feat*/` 目录下补充 `quickstart.md`，以功能简述为标题，罗列可操作的功能清单。
+- Plan 约定：`plan.md` 除步骤外，新增“设计”节沉淀调度/增量策略/扩展方向，便于跨 Feature 复用与回溯。
+- CLI 协作日志：在 `docs/cli-collaration/featxxx-collartion.md` 追加本地执行/澄清记录；如单文件过大，按 `featxxx-collartion-1.md` 至 `-9.md` 顺序分片。
 
 ## Architecture Notes（占位）
 - 待有架构发现时在此追加。
