@@ -12,7 +12,7 @@
 - `feat006-bear-export/`：Bear 笔记全量/增量导出与 manifest 去重。
 - `feat007-cognitive-leap/`（待建）：认知跃迁识别与可视化。
 - `feat008-task-management/`（待建）：任务/提醒多维视图。
-- `file-reflect-and-summary/`：日/周反思与摘要（文档 AI 协作，不含功能代码，产物不入库）。
+- `file-reflect-and-summary/`：日/周反思与摘要（文档 AI 协作，不含功能代码，产物不入库；维护类更新可使用 `chore` 前缀）。
 - `time-energy-visualization/`：总体可视化规范与快速上手。
 
 ## 架构桥 / 双轨协作
