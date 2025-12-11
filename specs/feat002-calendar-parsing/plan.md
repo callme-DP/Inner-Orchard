@@ -6,6 +6,7 @@
 3) 宽松解析：截断 `@url/notes:`，支持 yesterday/today/绝对日期时间段；解析失败行写日志。
 4) 过滤策略：白名单过滤，若过滤后为空则保留全部并记录。
 5) 全量生成：去掉 sample-day，生成 `week-<ISO周>.json`，验证 count 与原始行数匹配度。
+6) 年度归档：聚合 `week-*.json` 到 `artifacts/calendar/all-<year>.json`（按月分组，去重并输出人工复核报告）。
 
 ## 验证
 - 在本机运行 sample-day，检查日志 `[skip]` 占比；解析正常后全量生成。

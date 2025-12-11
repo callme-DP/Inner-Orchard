@@ -30,6 +30,7 @@
 - Plan/Tasks：`/speckit.plan`（输出 plan.md + tasks.md）
 - Analyze/Test：`/speckit.analyze` 或手动校验；缺数据/权限需提示
 - 架构桥：当发现架构问题时，用上述三句话报告 + 建 RFC/Backlog，并在 Architecture Notes 记录。
+- 文档约定：每个 `specs/feat*/` 目录下补充 `quickstart.md`，以功能简述为标题，罗列可操作的功能清单。
 
 ## Architecture Notes（占位）
 - 待有架构发现时在此追加。
