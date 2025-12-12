@@ -4,16 +4,18 @@
 - 串联 `specs/` 下的各个 Future/Feature，作为总索引与约定。
 - 保持 Spec→Clarify→Plan→Tasks→Implement→Test 流程；发现架构/双轨问题时使用“架构桥”约定。
 
+## 核心功能聚焦
+- 应用 ETL 核心：Calendar、Bear、Reminders（三大应用为主，专注类软件按需扩展）。
+- 语音入口：提供自然语言交互通道，降低操作成本。
+- 目标支撑：任务管理、时间/精力管理、文档/知识沉淀；新增功能应围绕上述应用 + 语音入口展开。
+
 ## 当前 Futures
 - `feat002-calendar-parsing/`：日历解析修复（属性输出、备注/类别解析等）。
-- `feat003-data-pipeline/`：接入真实日历/ActivityWatch/Mood 替换 mock。
-- `feat004-validation/`：校验与提示（权限/缺数据/耗时对齐/备注）。
 - `feat005-visual-interaction/`：粒度切换、精力维度切换、周对比、缺数据占位；按 phase 拆分 bear/reminder/calendar 可视化（各有 plan/spec/task）。
 - `feat006-bear-export/`：Bear 笔记全量/增量导出与 manifest 去重。
 - `feat007-cognitive-leap/`（待建）：认知跃迁识别与可视化。
 - `feat008-task-management/`（待建）：任务/提醒多维视图。
 - `file-reflect-and-summary/`：日/周反思与摘要（文档 AI 协作，不含功能代码，产物不入库；维护类更新可使用 `chore` 前缀）。
-- `time-energy-visualization/`：总体可视化规范与快速上手。
 
 ## 架构桥 / 双轨协作
 - 触发条件：实现过程中发现架构/跨域问题，但不影响当前 deliverable。
