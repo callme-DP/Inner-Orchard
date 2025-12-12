@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>日历动态视图（按时间窗口过滤）</title>
+  <style>
+    :root {
+      --bg: #0f1424;
+      --panel: #161d31;
+      --panel-2: #1a2338;
+      --text: #e7edff;
+      --muted: #9aa5c1;
+      --accent: #6bd6ff;
+      --green: #7ef5c4;
+      --yellow: #ffd479;
+      --red: #ff8a8a;
+      --purple: #c39bff;
+      --blue: #8fb6ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at 15% 20%, #1d2740, #0f1424 45%), #0f1424;
+      color: var(--text);
+    }
+    h1 { margin: 0; font-size: 20px; }
+    .subtitle { color: var(--muted); margin-top: 4px; font-size: 13px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin: 18px 0 12px;
+      flex-wrap: wrap;
+    }
+    .controls label { color: var(--muted); font-size: 13px; }
+    input, select, button {
+      background: var(--panel);
+      border: 1px solid #27314b;
+      border-radius: 10px;
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+    button { cursor: pointer; transition: all 0.2s ease; }
+    button:hover { border-color: var(--accent); color: var(--accent); }
+    .pill {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid #27314b;
+      background: var(--panel);
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .pill.active { border-color: var(--accent); color: var(--accent); background: #1a2340; }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.7fr 1.6fr 1.7fr;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .panel {
+      background: var(--panel-2);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.28);
+    }
+    .panel h3 { margin: 0 0 8px; font-size: 15px; color: var(--muted); }
+    .stat { font-size: 28px; font-weight: 700; margin: 4px 0; }
+    .delta { font-size: 13px; color: var(--muted); }
+    .delta.up { color: var(--green); }
+    .delta.down { color: var(--red); }
+    .list { display: grid; gap: 8px; margin-top: 8px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #1f2943;
+      align-items: center;
+    }
+    .row .title { font-weight: 600; }
+    .row small { color: var(--muted); }
+    .table {
+      width: 100%;
+      border-spacing: 0;
+      color: var(--text);
+      font-size: 13px;
+    }
+    .table th, .table td { padding: 8px 6px; text-align: left; }
+    .table tbody tr:nth-child(odd) { background: #1a2238; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #233053;
+      color: var(--accent);
+      font-size: 12px;
+    }
+    .hint { color: var(--muted); font-size: 12px; margin-top: 6px; }
+    .flex { display: flex; gap: 10px; align-items: center; }
+    .bars { display: grid; gap: 6px; margin-top: 8px; }
+    .bar-track { height: 10px; background: #1a2238; border-radius: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 10px; }
+    .chart { width: 100%; height: 220px; background: #131a2d; border-radius: 12px; padding: 8px; }
+    svg { width: 100%; height: 100%; }
+    .toolbar { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h1>日历动态视图（按时间窗口过滤）</h1>
+  <div class="subtitle">数据源：artifacts/calendar/all-2025.json（只读）；按钮切换日/周/月/年，右侧指标对比上一周期</div>
+
+  <div class="controls">
+    <div class="flex">
+      <label>基准日期</label>
+      <input type="date" id="date-input">
+    </div>
+    <div class="flex" id="period-switch"></div>
+    <button id="prev-btn">← 上一窗口</button>
+    <button id="next-btn">下一窗口 →</button>
+    <div class="hint">如需本地预览：`python3 -m http.server 8000` 然后打开 http://localhost:8000/html/output/calendar-dynamic.html</div>
+  </div>
+
+  <div class="grid">
+    <div class="panel" id="summary-card">
+      <h3>总计 / 应用类别耗时对比</h3>
+      <div class="stat" id="total-mins">--</div>
+      <div class="delta" id="total-delta">--</div>
+      <div class="bars" id="top-cal-bars"></div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <h3>精力趋势</h3>
+        <select id="mood-select">
+          <option value="all">全部</option>
+          <option value="stamina">stamina</option>
+          <option value="emotion">emotion</option>
+          <option value="willpower">willpower</option>
+          <option value="cognition">cognition</option>
+        </select>
+      </div>
+      <div class="chart">
+        <svg id="mood-chart"></svg>
+      </div>
+      <div class="hint">全部：本周 4 维度；选择单维度时，对比上一周（两条折线）。</div>
+    </div>
+
+    <div class="panel">
+      <div class="toolbar">
+        <h3>突发任务监控（周）</h3>
+        <div class="flex" style="gap:6px;">
+          <button id="incident-prev">← 上周</button>
+          <button id="incident-next">下周 →</button>
+        </div>
+      </div>
+      <div class="stat" id="incident-total">--</div>
+      <div class="delta" id="incident-delta">--</div>
+      <div class="chart">
+        <svg id="incident-chart"></svg>
+      </div>
+      <div class="hint">显示日历名包含“突发任务”的事件；当前周 vs 上一周折线对比。</div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top:14px;">
+    <div class="toolbar">
+      <h3>事件列表（随日/周/月/年切换联动）</h3>
+      <div id="range-label" class="delta">--</div>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>时间</th>
+          <th>标题</th>
+          <th>日历</th>
+          <th>时长</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody id="event-rows"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const DATA_URL = "../../artifacts/calendar/all-2025.json";
+    const PERIODS = ["day", "week", "month", "year"];
+    let EVENTS = [];
+    let anchorDate = null;
+    let currentPeriod = "day";
+    let incidentWeekOffset = 0; // 0: anchor所在周，-1: 上周
+
+    const MOOD_MOCK = {
+      current_week: [
+        { stamina: 6, emotion: 7, willpower: 6, cognition: 7 },
+        { stamina: 7, emotion: 6, willpower: 7, cognition: 6 },
+        { stamina: 8, emotion: 7, willpower: 7, cognition: 7 },
+        { stamina: 7, emotion: 6, willpower: 6, cognition: 6 },
+        { stamina: 6, emotion: 7, willpower: 6, cognition: 7 },
+        { stamina: 7, emotion: 7, willpower: 7, cognition: 7 },
+        { stamina: 8, emotion: 8, willpower: 7, cognition: 8 },
+      ],
+      previous_week: [
+        { stamina: 5, emotion: 6, willpower: 5, cognition: 6 },
+        { stamina: 6, emotion: 6, willpower: 6, cognition: 6 },
+        { stamina: 6, emotion: 6, willpower: 6, cognition: 7 },
+        { stamina: 6, emotion: 5, willpower: 5, cognition: 6 },
+        { stamina: 5, emotion: 6, willpower: 5, cognition: 6 },
+        { stamina: 6, emotion: 6, willpower: 6, cognition: 6 },
+        { stamina: 7, emotion: 7, willpower: 6, cognition: 7 },
+      ],
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function fmtDate(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function parseDate(str) {
+      const d = new Date(str);
+      return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    function addDays(d, n) {
+      const copy = new Date(d);
+      copy.setDate(copy.getDate() + n);
+      return copy;
+    }
+
+    function startOfWeek(d) {
+      const copy = new Date(d);
+      const day = copy.getDay() || 7; // Monday=1..Sunday=7
+      copy.setDate(copy.getDate() - (day - 1));
+      copy.setHours(0,0,0,0);
+      return copy;
+    }
+
+    function endOfWeek(d) {
+      const start = startOfWeek(d);
+      return addDays(start, 7);
+    }
+
+    function startOfMonth(d) {
+      const copy = new Date(d.getFullYear(), d.getMonth(), 1);
+      copy.setHours(0,0,0,0);
+      return copy;
+    }
+    function endOfMonth(d) {
+      const start = startOfMonth(d);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+      return end;
+    }
+
+    function startOfYear(d) {
+      const copy = new Date(d.getFullYear(), 0, 1);
+      copy.setHours(0,0,0,0);
+      return copy;
+    }
+    function endOfYear(d) {
+      const start = startOfYear(d);
+      const end = new Date(start);
+      end.setFullYear(end.getFullYear() + 1);
+      return end;
+    }
+
+    function periodRange(period, d) {
+      if (period === "day") {
+        const s = new Date(d); s.setHours(0,0,0,0);
+        const e = addDays(s, 1);
+        return { start: s, end: e, label: fmtDate(s) };
+      }
+      if (period === "week") {
+        const s = startOfWeek(d);
+        const e = endOfWeek(d);
+        return { start: s, end: e, label: `${fmtDate(s)} ~ ${fmtDate(addDays(e,-1))}` };
+      }
+      if (period === "month") {
+        const s = startOfMonth(d);
+        const e = endOfMonth(d);
+        return { start: s, end: e, label: `${s.getFullYear()}-${String(s.getMonth()+1).padStart(2,"0")}` };
+      }
+      const s = startOfYear(d);
+      const e = endOfYear(d);
+      return { start: s, end: e, label: `${s.getFullYear()}年` };
+    }
+
+    function previousRange(period, d) {
+      if (period === "day") return periodRange("day", addDays(d, -1));
+      if (period === "week") return periodRange("week", addDays(d, -7));
+      if (period === "month") { const prev = new Date(d); prev.setMonth(prev.getMonth() - 1); return periodRange("month", prev); }
+      const prev = new Date(d); prev.setFullYear(prev.getFullYear() - 1); return periodRange("year", prev);
+    }
+
+    function minutesBetween(startIso, endIso) {
+      const s = new Date(startIso);
+      const e = new Date(endIso);
+      return Math.max(0, Math.round((e - s) / 60000));
+    }
+
+    function filterEvents(range) {
+      return EVENTS.filter(evt => {
+        const s = new Date(evt.start);
+        return s >= range.start && s < range.end;
+      });
+    }
+
+    function aggregateByCalendar(events) {
+      const byCal = {};
+      events.forEach(e => {
+        const key = e.calendar || "未分类";
+        byCal[key] = (byCal[key] || 0) + minutesBetween(e.start, e.end);
+      });
+      return Object.entries(byCal).map(([name, mins]) => ({ name, mins }))
+        .sort((a, b) => b.mins - a.mins);
+    }
+
+    function renderPeriodButtons() {
+      const wrap = $("period-switch");
+      wrap.innerHTML = "";
+      PERIODS.forEach(p => {
+        const btn = document.createElement("div");
+        btn.className = `pill ${currentPeriod === p ? "active" : ""}`;
+        btn.textContent = p === "day" ? "日" : p === "week" ? "周" : p === "month" ? "月" : "年";
+        btn.onclick = () => { currentPeriod = p; renderAll(); };
+        wrap.appendChild(btn);
+      });
+    }
+
+    function renderSummary(curRange, curEvents, prevEvents) {
+      const total = curEvents.reduce((sum, e) => sum + minutesBetween(e.start, e.end), 0);
+      const prevTotal = prevEvents ? prevEvents.reduce((s, e) => s + minutesBetween(e.start, e.end), 0) : 0;
+      $("total-mins").textContent = `${(total/60).toFixed(1)} 小时`;
+      const delta = total - prevTotal;
+      const pct = prevTotal ? ((delta / prevTotal) * 100).toFixed(1) : null;
+      $("total-delta").textContent = prevEvents
+        ? `${delta >=0 ? "+" : ""}${(delta/60).toFixed(1)} 小时${pct !== null ? ` (${delta>=0?"+":""}${pct}%)` : ""}`
+        : "无对比";
+      $("total-delta").className = `delta ${delta>0?"up":delta<0?"down":""}`;
+
+      const barsWrap = $("top-cal-bars");
+      barsWrap.innerHTML = "";
+      const byCal = aggregateByCalendar(curEvents).slice(0, 4);
+      const maxVal = Math.max(...byCal.map(i => i.mins), 1);
+      byCal.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "row";
+        const prevItem = prevEvents ? aggregateByCalendar(prevEvents).find(i => i.name === item.name) : null;
+        const deltaCal = prevItem ? item.mins - prevItem.mins : null;
+        const pctCal = prevItem && prevItem.mins ? ((deltaCal / prevItem.mins) * 100).toFixed(1) : null;
+        row.innerHTML = `
+          <div class="title">${item.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(item.mins/maxVal)*100}%"></div></div>
+          <div>${(item.mins/60).toFixed(1)}h</div>
+          <div class="${deltaCal===null?'delta':deltaCal>0?'delta up':deltaCal<0?'delta down':'delta'}">
+            ${deltaCal===null?'无对比':`${deltaCal>=0?'+':''}${(deltaCal/60).toFixed(1)}h${pctCal?` (${deltaCal>=0?'+':''}${pctCal}%)`:''}`}
+          </div>
+        `;
+        barsWrap.appendChild(row);
+      });
+    }
+
+    function renderEventsTable(events, rangeLabel) {
+      $("range-label").textContent = rangeLabel;
+      const tbody = $("event-rows");
+      tbody.innerHTML = "";
+      const sorted = events.slice().sort((a, b) => new Date(a.start) - new Date(b.start));
+      sorted.forEach(evt => {
+        const tr = document.createElement("tr");
+        const start = new Date(evt.start);
+        const end = new Date(evt.end);
+        tr.innerHTML = `
+          <td>${fmtDate(start)} ${start.toTimeString().slice(0,5)} - ${end.toTimeString().slice(0,5)}</td>
+          <td>${evt.title || "-"}</td>
+          <td>${evt.calendar || "-"}</td>
+          <td>${(minutesBetween(evt.start, evt.end)/60).toFixed(2)}h</td>
+          <td>${evt.notes || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+      if (!events.length) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="5" style="color:var(--muted);">该时间窗口暂无事件</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function makePolyline(points, color) {
+      return `<polyline points="${points.map(p => p.join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    function renderMood() {
+      const svg = $("mood-chart");
+      svg.innerHTML = "";
+      const dim = $("mood-select").value;
+      const cw = svg.clientWidth || 400;
+      const ch = svg.clientHeight || 220;
+      const pad = 20;
+      const xStep = (cw - pad * 2) / 6;
+      const series = [];
+      if (dim === "all") {
+        [["stamina", "var(--accent)"], ["emotion", "var(--yellow)"], ["willpower", "var(--green)"], ["cognition", "var(--purple)"]]
+          .forEach(([field, color]) => {
+            const pts = MOOD_MOCK.current_week.map((item, idx) => [pad + idx * xStep, pad + (10 - item[field]) / 10 * (ch - pad * 2)]);
+            series.push(makePolyline(pts, color));
+          });
+      } else {
+        const curPts = MOOD_MOCK.current_week.map((item, idx) => [pad + idx * xStep, pad + (10 - item[dim]) / 10 * (ch - pad * 2)]);
+        const prevPts = MOOD_MOCK.previous_week.map((item, idx) => [pad + idx * xStep, pad + (10 - item[dim]) / 10 * (ch - pad * 2)]);
+        series.push(makePolyline(prevPts, "var(--muted)"));
+        series.push(makePolyline(curPts, "var(--accent)"));
+      }
+      svg.innerHTML = series.join("");
+    }
+
+    function renderIncidents() {
+      const svg = $("incident-chart");
+      const cw = svg.clientWidth || 400;
+      const ch = svg.clientHeight || 220;
+      const pad = 20;
+      const xStep = (cw - pad * 2) / 6;
+
+      const baseWeekStart = startOfWeek(addDays(anchorDate, incidentWeekOffset * 7));
+      const baseWeekEnd = endOfWeek(baseWeekStart);
+      const prevWeekStart = addDays(baseWeekStart, -7);
+      const prevWeekEnd = baseWeekStart;
+
+      const toSeries = (start, end) => {
+        const arr = new Array(7).fill(0);
+        EVENTS.forEach(evt => {
+          if (!String(evt.calendar || "").includes("突发任务")) return;
+          const s = new Date(evt.start);
+          if (s >= start && s < end) {
+            const idx = (s.getDay() || 7) - 1;
+            arr[idx] += minutesBetween(evt.start, evt.end);
+          }
+        });
+        return arr;
+      };
+
+      const cur = toSeries(baseWeekStart, baseWeekEnd);
+      const prev = toSeries(prevWeekStart, prevWeekEnd);
+      const maxVal = Math.max(...cur, ...prev, 1);
+
+      const toPoints = (arr) => arr.map((v, idx) => [pad + idx * xStep, pad + (1 - v / maxVal) * (ch - pad * 2)]);
+      const curPts = toPoints(cur);
+      const prevPts = toPoints(prev);
+      svg.innerHTML = makePolyline(prevPts, "var(--muted)") + makePolyline(curPts, "var(--accent)");
+
+      const curTotal = cur.reduce((a,b)=>a+b,0);
+      const prevTotal = prev.reduce((a,b)=>a+b,0);
+      const delta = curTotal - prevTotal;
+      const pct = prevTotal ? ((delta/prevTotal)*100).toFixed(1) : null;
+      $("incident-total").textContent = `${(curTotal/60).toFixed(1)} 小时`;
+      $("incident-delta").textContent = prevTotal ? `${delta>=0?'+':''}${(delta/60).toFixed(1)}h${pct?` (${delta>=0?'+':''}${pct}%)`:''}` : "无对比";
+      $("incident-delta").className = `delta ${delta>0?"up":delta<0?"down":""}`;
+    }
+
+    function renderAll() {
+      if (!anchorDate) return;
+      renderPeriodButtons();
+      $("date-input").value = fmtDate(anchorDate);
+
+      const curRange = periodRange(currentPeriod, anchorDate);
+      const prevRange = previousRange(currentPeriod, anchorDate);
+      const curEvents = filterEvents(curRange);
+      const prevEvents = filterEvents(prevRange);
+
+      renderSummary(curRange, curEvents, prevEvents);
+      renderEventsTable(curEvents, curRange.label);
+      renderMood();
+      renderIncidents();
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch(DATA_URL);
+        const json = await res.json();
+        EVENTS = json;
+        const latest = EVENTS.reduce((acc, evt) => {
+          const d = new Date(evt.start);
+          return d > acc ? d : acc;
+        }, new Date(0));
+        anchorDate = latest;
+        $("date-input").value = fmtDate(anchorDate);
+        renderAll();
+      } catch (e) {
+        document.body.innerHTML = `<div style="color:#fff;font-size:16px;">加载数据失败：${e}. 请确认已通过 http 访问本页且存在 ${DATA_URL}。</div>`;
+      }
+    }
+
+    $("date-input").addEventListener("change", (e) => {
+      const d = parseDate(e.target.value);
+      if (d) { anchorDate = d; incidentWeekOffset = 0; renderAll(); }
+    });
+    $("prev-btn").onclick = () => {
+      if (!anchorDate) return;
+      if (currentPeriod === "day") anchorDate = addDays(anchorDate, -1);
+      else if (currentPeriod === "week") anchorDate = addDays(anchorDate, -7);
+      else if (currentPeriod === "month") { const d = new Date(anchorDate); d.setMonth(d.getMonth() - 1); anchorDate = d; }
+      else { const d = new Date(anchorDate); d.setFullYear(d.getFullYear() - 1); anchorDate = d; }
+      incidentWeekOffset = 0;
+      renderAll();
+    };
+    $("next-btn").onclick = () => {
+      if (!anchorDate) return;
+      if (currentPeriod === "day") anchorDate = addDays(anchorDate, 1);
+      else if (currentPeriod === "week") anchorDate = addDays(anchorDate, 7);
+      else if (currentPeriod === "month") { const d = new Date(anchorDate); d.setMonth(d.getMonth() + 1); anchorDate = d; }
+      else { const d = new Date(anchorDate); d.setFullYear(d.getFullYear() + 1); anchorDate = d; }
+      incidentWeekOffset = 0;
+      renderAll();
+    };
+    $("mood-select").onchange = renderMood;
+    $("incident-prev").onclick = () => { incidentWeekOffset -= 1; renderIncidents(); };
+    $("incident-next").onclick = () => { incidentWeekOffset += 1; renderIncidents(); };
+
+    loadData();
+  </script>
+</body>
+</html>
