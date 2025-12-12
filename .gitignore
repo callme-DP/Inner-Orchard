@@ -11,6 +11,7 @@ html/v1/
 # 本地基线/占位 HTML 可跟踪，输出文件保持忽略
 html/output/*.html
 specs/file-reflect-and-summary/
+scripts/cache/
 *.sqlite
 *.jsonl
 *.env
